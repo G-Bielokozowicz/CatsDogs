@@ -11,7 +11,7 @@ from torch.optim.lr_scheduler import StepLR
 
 transform = transforms.Compose([
     transforms.Resize((128, 128)),
-    #transforms.RandomHorizontalFlip(),  # Randomly flip images horizontally
+    transforms.RandomHorizontalFlip(),  # Randomly flip images horizontally
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
@@ -26,8 +26,8 @@ test_size = len(dataset) - train_size  # 20% for testing
 train_dataset, test_dataset = random_split(dataset, [train_size, test_size])
 
 # Step 5: Create Data Loaders
-train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
+test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False)
 
 
 class ConvNet(nn.Module):
@@ -67,6 +67,7 @@ class ConvNet(nn.Module):
 model = ConvNet()
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model.to(device)
+
 # Define the loss function and optimizer
 criterion = nn.CrossEntropyLoss()  # Suitable for multi-class classification
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001)  # Using Adam optimizer
@@ -121,3 +122,4 @@ with torch.no_grad():
         correct += (predicted == labels).sum().item()
 
 print(f"Validation Accuracy: {100 * correct / total:.2f}%")
+torch.save(model.state_dict(), 'model_state_dict.pth')
